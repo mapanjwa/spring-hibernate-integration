@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+	xmlns:context="http://www.springframework.org/schema/context">
+
+	<context:annotation-config/>
+
+	<context:component-scan base-package="org.demo"></context:component-scan>
+	
+	<!-- way 1 -->
+	<!-- every time a new connection object will be created -->
+	<!--  
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:XE"/>
+		<property name="username" value="scott"/>
+		<property name="password" value="tiger"/>
+	</bean>
+	-->
+	
+	<!-- way 2 -->
+	<!-- This uses 2 jars -  commons dbcp and common pool jar. provide extra features of connection pooling -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:XE"/>
+		<property name="username" value="scott"/>
+		<property name="password" value="tiger"/>
+		<property name="initialSize" value="2"/>
+		<property name="maxActive" value="5"/>
+	</bean>
+	
+	
+	<!--  instantiate the bean of below class with singleton instance -->
+	<!--  No need of .cfg file of Hibernate. Spring will take care of initialization -->
+	<bean id = "sessionFactory" 
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		
+		<!-- information about the DB -->
+		<property name="dataSource" ref="dataSource"/>
+		
+		<!-- packages to be scanned for annotated classes-->
+		<property name="packagesToScan" value="org.demo.model"/>
+
+		<!-- Dialect Property -->
+		<property name="hibernateProperties">
+			<!--  <value>hibernate.dialect=org.hibernate.dialect.Oracle10gDialect</value>-->
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>
+			</props>
+			
+		</property>
+	</bean>
+	
+	
+</beans>
